@@ -35,6 +35,8 @@ pub struct State {
     pub num: u64,
     // 管理员地址
     pub admin: Pubkey,
+    // token
+    pub mint: Pubkey,
     pub extend: [u64; 32]
 }
 
@@ -45,6 +47,7 @@ impl State {
             rate: 0,
             num: 0,
             admin: Pubkey::default(),
+            mint: Pubkey::default(),
             extend: [0;32]
         }
     }

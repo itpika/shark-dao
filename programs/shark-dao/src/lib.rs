@@ -2,12 +2,6 @@ mod errs;
 mod instructions;
 use instructions::*;
 use anchor_lang::prelude::*;
-use std::mem::size_of;
-use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::{Token};
-use anchor_spl::token_interface::{self, Mint, TokenAccount, TransferChecked};
-use spl_token;
-use anchor_lang::solana_program::system_program;
 
 declare_id!("BQ4h4xZ3v6VmCdsvkPMuAyPPD7TUo8DVXEdHH8ZjZGjQ");
 
@@ -22,48 +16,20 @@ pub mod shark_dao {
     pub fn preorder_token(ctx: Context<PreorderToken>, amount: u64) -> Result<()> {
         instructions::preorder_token(ctx, amount)
     }
+    pub fn set_auth(ctx: Context<SetAuth>, admin: Pubkey) -> Result<()> {
+        instructions::set_auth(ctx, admin)
+    }
+    pub fn set_mint(ctx: Context<SetMint>) -> Result<()> {
+        instructions::set_mint(ctx)
+    }
+    pub fn withdraw_token(ctx: Context<WithdrawToken>) -> Result<()> {
+        instructions::withdraw_token(ctx)
+    }
 
-    // pub fn new_project(ctx: Context<NewProject>, id: String, target_amount: u64, rate: u16, end_time: u64) -> Result<()> {
-    //     require!(ctx.accounts.state.init, errs::ErrorCode::NotInit);
-    //     ctx.accounts.pro.id = id.clone();
-    //     ctx.accounts.pro.admin = ctx.accounts.payer.key();
-    //     ctx.accounts.pro.target_amount = target_amount;
-    //     ctx.accounts.pro.mint = ctx.accounts.mint.key();
-    //     ctx.accounts.pro.rate = rate;
-    //     ctx.accounts.pro.ctm = ctx.accounts.clock.unix_timestamp as u64;
-    //     if end_time != 0 {
-    //         ctx.accounts.pro.etm = end_time;
-    //     }
-    //     msg!("#project {} created, admin: {}, end_time: {}", id, ctx.accounts.payer.key(), end_time);
-    //
-    //     Ok(())
-    // }
+    pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {
+        instructions::withdraw_sol(ctx, amount)
+    }
 
-    // 用户众筹
-    // pub fn deposit(ctx: Context<Deposit>, id: String, amount: u64) -> Result<()> {
-    //     require!(ctx.accounts.state.init, errs::ErrorCode::NotInit);
-    //
-    //     require!(ctx.accounts.from_token_account.amount > amount, errs::ErrorCode::InsufficientBalance);
-    //
-    //     token_interface::transfer_checked(
-    //         CpiContext::new(ctx.accounts.token_program.to_account_info(),TransferChecked {
-    //             from: ctx.accounts.from_token_account.to_account_info(),
-    //             to: ctx.accounts.token_account.to_account_info(),
-    //             authority: ctx.accounts.payer.to_account_info(),
-    //             mint: ctx.accounts.mint.to_account_info(),
-    //         }), amount, ctx.accounts.mint.decimals)?;
-    //
-    //     ctx.accounts.pro.amount += amount;
-    //
-    //     if ctx.accounts.personal.owner.eq(&system_program::id()) {
-    //         ctx.accounts.personal.owner = ctx.accounts.payer.key();
-    //         ctx.accounts.personal.project_id = id.clone();
-    //     }
-    //     ctx.accounts.personal.amount += amount;
-    //     msg!("#deposit {} to {} amount {}", ctx.accounts.payer.key(), id, amount);
-    //
-    //     Ok(())
-    // }
 
     // 管理员提取
     // pub fn withdraw(ctx: Context<Withdraw>, id: String) -> Result<()> {

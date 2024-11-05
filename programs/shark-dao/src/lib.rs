@@ -12,18 +12,21 @@ pub mod shark_dao {
     pub fn init(ctx: Context<Init>) -> Result<()> {
         instructions::init(ctx)
     }
-
-    pub fn preorder_token(ctx: Context<PreorderToken>, amount: u64) -> Result<()> {
-        instructions::preorder_token(ctx, amount)
+    pub fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amount: u64, price: u64, stm: u64, etm: u64) -> Result<()> {
+        instructions::new_preorder(ctx, preorder_name, amount, price, stm, etm)
+    }
+    pub fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String, price: u64, amount: u64) -> Result<()> {
+        instructions::preorder_token(ctx, preorder_name, price, amount)
     }
     pub fn set_auth(ctx: Context<SetAuth>, admin: Pubkey) -> Result<()> {
         instructions::set_auth(ctx, admin)
     }
-    pub fn set_mint(ctx: Context<SetMint>) -> Result<()> {
-        instructions::set_mint(ctx)
-    }
+
     pub fn withdraw_token(ctx: Context<WithdrawToken>) -> Result<()> {
         instructions::withdraw_token(ctx)
+    }
+    pub fn withdraw_fund(ctx: Context<WithdrawFund>, amount: u64) -> Result<()> {
+        instructions::withdraw_fund(ctx, amount)
     }
 
     pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {

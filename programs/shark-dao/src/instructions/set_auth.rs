@@ -7,7 +7,7 @@ use crate::instructions::{STATE_SEED, State};
 pub(crate) fn set_auth(ctx: Context<SetAuth>, admin: Pubkey) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
-    msg!("set auth: {} -> {}", ctx.accounts.payer.key(), admin);
+    msg!("#set auth: {} -> {}", ctx.accounts.payer.key(), admin);
     ctx.accounts.state.admin = admin;
     Ok(())
 }

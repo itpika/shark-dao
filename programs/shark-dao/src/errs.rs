@@ -4,6 +4,8 @@ use anchor_lang::prelude::*;
 pub enum ErrorCode {
     #[msg("Not init")]
     NotInit,
+    #[msg("Invalid parameter")]
+    InvalidParameter,
     #[msg("Repeated init")]
     RepeatedInit,
     #[msg("Not approved")]
@@ -14,6 +16,10 @@ pub enum ErrorCode {
     MissingTickArrayBitmapExtensionAccount,
     #[msg("Insufficient balance")]
     InsufficientBalance,
+    #[msg("Insufficient mint balance")]
+    InsufficientMintBalance,
+    #[msg("Insufficient collection mint balance")]
+    InsufficientCollectionMintBalance,
     #[msg("Not authorized")]
     NotAuthorized,
 }

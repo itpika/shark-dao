@@ -4,14 +4,13 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::Token;
 use anchor_spl::token_interface::{Mint, TokenAccount};
 use crate::errs::ErrorCode;
-use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events};
+use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events, PreOrder};
 
 
 pub(crate) fn withdraw_token(ctx: Context<WithdrawToken>) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(ctx.accounts.user_preorder.owner.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
 
-    msg!("set mint: {}", ctx.accounts.mint.key());
 
     emit!(events::WithdrawToken{
         account: ctx.accounts.payer.key().to_string(),
@@ -28,7 +27,7 @@ pub struct WithdrawToken<'info> {
     pub state: Box<Account<'info, State>>,
     #[account(mut, seeds = [USER_PREORDER.as_bytes(), payer.key().as_ref()], bump)]
     pub user_preorder: Box<Account<'info, UserPreOrder>>,
-    #[account(address = state.mint)]
+    #[account(address = user_preorder.mint)]
     pub mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(mut)]
     pub payer: Signer<'info>,

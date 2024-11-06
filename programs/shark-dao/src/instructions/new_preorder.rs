@@ -18,8 +18,7 @@ pub const PREORDER: &str = "PREORDER";
 
 pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amount: u64, price: u64, stm: u64, etm: u64) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
-
-
+    require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
 
     token_interface::transfer_checked(
         CpiContext::new(ctx.accounts.token_program.to_account_info(),TransferChecked {
@@ -49,15 +48,14 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
 }
 
 #[derive(Accounts)]
-#[instruction(preorder_name: String, amount: u64, price: u64)]
+#[instruction(preorder_name: String)]
 pub struct NewPreorder<'info> {
     #[account(seeds = [STATE_SEED.as_bytes()], bump)]
     pub state: Box<Account<'info, State>>,
     #[account(init,
     seeds = [
     PREORDER.as_bytes(),
-    preorder_name.as_bytes(),
-    price.to_le_bytes().as_ref()
+    preorder_name.as_bytes()
     ],
     bump, payer = payer, space = size_of::<PreOrder>()+8)
     ]

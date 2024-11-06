@@ -13,7 +13,6 @@ pub(crate) fn withdraw_fund(ctx: Context<WithdrawFund>, amount: u64) -> Result<(
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
 
-
     // transfer token
     token_interface::transfer_checked(
         CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(),TransferChecked {

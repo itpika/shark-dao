@@ -22,4 +22,8 @@ pub enum ErrorCode {
     InsufficientCollectionMintBalance,
     #[msg("Not authorized")]
     NotAuthorized,
+    #[msg("Time over")]
+    TimeOver,
+    #[msg("Repeated withdraw")]
+    RepeatedWithdraw,
 }

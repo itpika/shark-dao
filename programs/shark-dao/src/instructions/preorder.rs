@@ -17,12 +17,14 @@ pub const USER_PREORDER: &str = "USER_PREORDER";
 一共分3轮预售，第一轮价格0.005，预售0.6亿枚；第二轮价格0.008，数量0.9亿枚，第三轮价格0.1，数量1亿枚，预售计划一共买出2.5亿枚
 */
 // 预购代币
-pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String, price: u64, amount: u64) -> Result<()> {
+pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String, amount: u64) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(ctx.accounts.state_token_account.amount > 0, ErrorCode::InsufficientMintBalance);
+    let now = ctx.accounts.clock.unix_timestamp as u64;
+    require!(ctx.accounts.preorder.stm < now && ctx.accounts.preorder.etm > now, ErrorCode::TimeOver);
 
     require!(ctx.accounts.payer_collection_token_account.amount > amount, ErrorCode::InsufficientCollectionMintBalance);
-    let buy_amount = amount.checked_div(price).unwrap();
+    let buy_amount = amount.checked_div(ctx.accounts.preorder.price).unwrap();
 
     require!(buy_amount > 0, ErrorCode::InvalidParameter);
 
@@ -39,7 +41,7 @@ pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String,
     token_interface::transfer_checked(
         CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(),TransferChecked {
             from: ctx.accounts.state_token_account.to_account_info(),
-            to: ctx.accounts.user_preorder_token_account.to_account_info(),
+            to: ctx.accounts.user_token_account.to_account_info(),
             authority: ctx.accounts.state.to_account_info(),
             mint: ctx.accounts.mint.to_account_info(),
         }, &[
@@ -56,9 +58,9 @@ pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String,
         ctx.accounts.user_preorder.mint = ctx.accounts.mint.key();
         ctx.accounts.user_preorder.ctm = ctx.accounts.clock.unix_timestamp as u64;
         ctx.accounts.user_preorder.extend = [0u64; 16];
+        ctx.accounts.user_preorder.amount = buy_amount;
         ctx.accounts.preorder.num += 1;
     }
-    ctx.accounts.user_preorder.amount += buy_amount;
     ctx.accounts.preorder.amount -= buy_amount;
     ctx.accounts.preorder.collection_amount += amount;
 
@@ -117,10 +119,10 @@ pub struct PreorderToken<'info> {
         init_if_needed,
         payer = payer,
         associated_token::mint = mint,
-        associated_token::authority = user_preorder,
+        associated_token::authority = payer,
         associated_token::token_program = token_program
     )]
-    pub user_preorder_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub user_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut)]
     pub payer: Signer<'info>,
     pub clock: Sysvar<'info, Clock>,

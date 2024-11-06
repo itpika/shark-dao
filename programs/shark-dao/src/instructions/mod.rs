@@ -6,10 +6,11 @@ mod withdraw_token;
 mod new_preorder;
 mod withdraw_sol;
 mod withdraw_fund;
-
+mod lock_token;
 
 pub use init::*;
 pub use withdraw_token::*;
+pub use lock_token::*;
 pub use withdraw_fund::*;
 pub use withdraw_sol::*;
 pub use new_preorder::*;

@@ -1,5 +1,5 @@
 import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
+import {Program, web3} from "@coral-xyz/anchor";
 import { SharkDao } from "../target/types/shark_dao";
 
 describe("shark-dao", () => {
@@ -10,7 +10,7 @@ describe("shark-dao", () => {
 
   it("Is initialized!", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
+    const tx = await program.methods.init().rpc();
     console.log("Your transaction signature", tx);
   });
 });

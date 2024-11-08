@@ -6,7 +6,7 @@ use anchor_spl::token_2022::TransferChecked;
 use anchor_spl::token_interface;
 use anchor_spl::token_interface::{Mint, TokenAccount};
 use crate::errs::ErrorCode;
-use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events};
+use crate::instructions::{STATE_SEED, State, events};
 
 
 pub(crate) fn withdraw_fund(ctx: Context<WithdrawFund>, amount: u64) -> Result<()> {

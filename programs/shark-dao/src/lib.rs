@@ -3,7 +3,7 @@ mod instructions;
 use instructions::*;
 use anchor_lang::prelude::*;
 
-declare_id!("BQ4h4xZ3v6VmCdsvkPMuAyPPD7TUo8DVXEdHH8ZjZGjQ");
+declare_id!("AowwQVNHgEYR4Lbmy2QR1CE9PqCkmHiKWZDscnfPy1Ch");
 
 
 #[program]
@@ -29,13 +29,13 @@ pub mod shark_dao {
         instructions::withdraw_fund(ctx, amount)
     }
 
-    pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64, etm: u64) -> Result<()> {
-        instructions::withdraw_sol(ctx, amount, etm)
+    pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {
+        instructions::withdraw_sol(ctx, amount)
     }
-    pub fn lock_token(ctx: Context<LockToken>, amount: u64) -> Result<()> {
-        instructions::lock_token(ctx, amount)
+    pub fn lock_token(ctx: Context<LockToken>, amount: u64, etm: u64) -> Result<()> {
+        instructions::lock_token(ctx, amount, etm)
     }
-    pub fn lock_token(ctx: Context<LockToken>) -> Result<()> {
+    pub fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<()> {
         instructions::withdraw_unlock_token(ctx)
     }
 

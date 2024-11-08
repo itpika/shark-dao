@@ -1,12 +1,9 @@
 use anchor_lang::context::Context;
 use anchor_lang::prelude::*;
 use anchor_lang::system_program::{transfer, Transfer};
-use anchor_spl::associated_token::AssociatedToken;
-use anchor_spl::token::Token;
-use anchor_spl::token_interface::{Mint, TokenAccount};
 use crate::instructions::events;
 use crate::errs::ErrorCode;
-use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder};
+use crate::instructions::{STATE_SEED, State};
 
 
 pub(crate) fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {

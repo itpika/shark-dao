@@ -4,7 +4,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::Token;
 use anchor_spl::token_interface::{Mint, TokenAccount};
 use crate::errs::ErrorCode;
-use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events, PreOrder};
+use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events};
 
 
 pub(crate) fn withdraw_token(ctx: Context<WithdrawToken>) -> Result<()> {

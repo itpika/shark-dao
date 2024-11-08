@@ -6,14 +6,16 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-shark_dao = "BQ4h4xZ3v6VmCdsvkPMuAyPPD7TUo8DVXEdHH8ZjZGjQ"
+shark_dao = "AowwQVNHgEYR4Lbmy2QR1CE9PqCkmHiKWZDscnfPy1Ch"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+init = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/init.ts"
+new_preorder = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/new_preorder.ts"
+preorder = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/preorder.ts"

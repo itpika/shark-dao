@@ -1,8 +1,6 @@
 use std::mem::size_of;
 use anchor_lang::context::Context;
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::system_program;
-use anchor_lang::system_program::{transfer, Transfer};
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token::Token;
 use anchor_spl::token_2022::TransferChecked;
@@ -12,7 +10,6 @@ use crate::errs::ErrorCode;
 use crate::instructions::State;
 use crate::instructions::STATE_SEED;
 use crate::instructions::events;
-use crate::instructions::USER_PREORDER;
 
 pub const PREORDER: &str = "PREORDER";
 
@@ -23,7 +20,7 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
     token_interface::transfer_checked(
         CpiContext::new(ctx.accounts.token_program.to_account_info(),TransferChecked {
             from: ctx.accounts.payer_token_account.to_account_info(),
-            to: ctx.accounts.state_token_account.to_account_info(),
+            to: ctx.accounts.preorder_token_account.to_account_info(),
             authority: ctx.accounts.payer.to_account_info(),
             mint: ctx.accounts.mint.to_account_info(),
         }), amount, ctx.accounts.mint.decimals)?;
@@ -65,13 +62,13 @@ pub struct NewPreorder<'info> {
     // 收款token
     pub collection_mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(
-        init_if_needed,
+        init,
         payer = payer,
         associated_token::mint = mint,
-        associated_token::authority = state,
+        associated_token::authority = preorder,
         associated_token::token_program = token_program
     )]
-    pub state_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub preorder_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
         init_if_needed,
         payer = payer,
@@ -91,7 +88,6 @@ pub struct NewPreorder<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
     #[account(mut)]
     pub payer: Signer<'info>,
-    pub clock: Sysvar<'info, Clock>,
     pub system_program: Program<'info, System>,
 }
 

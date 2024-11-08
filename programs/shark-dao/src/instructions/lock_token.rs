@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use anchor_lang::context::Context;
 use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
@@ -6,7 +7,7 @@ use anchor_spl::token_2022::TransferChecked;
 use anchor_spl::token_interface;
 use anchor_spl::token_interface::{CloseAccount, Mint, TokenAccount};
 use crate::errs::ErrorCode;
-use crate::instructions::{STATE_SEED, USER_PREORDER, State, UserPreOrder, events, PreOrder};
+use crate::instructions::{STATE_SEED, State, events};
 
 const LOCK_INFO_SEED: &str = "lock_info";
 

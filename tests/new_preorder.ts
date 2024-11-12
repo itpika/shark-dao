@@ -16,7 +16,7 @@ describe("shark-dao", () => {
 
   it("Is initialized!", async () => {
     // Add your test here.
-    const tx = await program.methods.newPreorder("tow", new BN(10000*1000000), new BN(100000), new BN(1730896800), new BN(1731283200)).
+    const tx = await program.methods.newPreorder("three", new BN(10000*1000000), new BN(50000), new BN(1730896800), new BN(1735689600)).
     accounts({
       mint: 'FBQAsNhTiQSWyDL7NGz8w9fV9BVqLbUSviWRy8McbTXU',
       collectionMint: '6DfkPaFibZPXyzfYCEMMx1bNJ6UCBwTREGrzbgDQDUxp',

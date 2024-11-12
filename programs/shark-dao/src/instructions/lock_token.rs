@@ -13,30 +13,30 @@ const LOCK_INFO_SEED: &str = "lock_info";
 
 pub(crate) fn lock_token(ctx: Context<LockToken>, amount: u64, etm: u64) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
-    require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
+    // require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
 
     token_interface::transfer_checked(
-        CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(),TransferChecked {
-            from: ctx.accounts.state_token_account.to_account_info(),
+        CpiContext::new(ctx.accounts.token_program.to_account_info(),TransferChecked {
+            from: ctx.accounts.payer_token_account.to_account_info(),
             to: ctx.accounts.lock_token_account.to_account_info(),
-            authority: ctx.accounts.state.to_account_info(),
+            authority: ctx.accounts.payer.to_account_info(),
             mint: ctx.accounts.mint.to_account_info(),
-        }, &[&[
-            STATE_SEED.as_bytes(),
-            &[ctx.bumps.state]
-        ]]), amount, ctx.accounts.mint.decimals)?;
+        }), amount, ctx.accounts.mint.decimals)?;
 
     ctx.accounts.lock_info.mint = ctx.accounts.mint.key();
     ctx.accounts.lock_info.amount = amount;
     ctx.accounts.lock_info.withdraw = false;
-    ctx.accounts.lock_info.owner = ctx.accounts.payer.key();
+    ctx.accounts.lock_info.owner = ctx.accounts.target_account.key();
     ctx.accounts.lock_info.etm = etm;
 
-    emit!(events::WithdrawToken{
-        account: ctx.accounts.payer.key().to_string(),
+    emit!(events::LockToken{
+        account: ctx.accounts.target_account.key().to_string(),
         mint: ctx.accounts.mint.key().to_string(),
-        amount: 0,
+        amount,
+        etm,
     });
+
+    msg!("#lock account: {}, amount: {}, etm: {}, mint: {}", ctx.accounts.target_account.key(), amount, etm, ctx.accounts.mint.key());
 
     Ok(())
 }
@@ -53,6 +53,8 @@ pub(crate) fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<(
             mint: ctx.accounts.mint.to_account_info(),
         }, &[&[
             LOCK_INFO_SEED.as_bytes(),
+            ctx.accounts.mint.key().as_ref(),
+            ctx.accounts.payer.key().as_ref(),
             &[ctx.bumps.lock_info]
         ]]), ctx.accounts.lock_info.amount, ctx.accounts.mint.decimals)?;
 
@@ -67,15 +69,20 @@ pub(crate) fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<(
         }, &[
             &[
                 LOCK_INFO_SEED.as_bytes(),
-                &[ctx.bumps.lock_info],
+                ctx.accounts.mint.key().as_ref(),
+                ctx.accounts.payer.key().as_ref(),
+                &[ctx.bumps.lock_info]
             ],
         ])
     )?;
 
+
+    msg!("#withdraw account: {} amount: {}", ctx.accounts.payer.key(), ctx.accounts.lock_info.amount);
+
     emit!(events::WithdrawToken{
         account: ctx.accounts.payer.key().to_string(),
         mint: ctx.accounts.mint.key().to_string(),
-        amount: 0,
+        amount: ctx.accounts.lock_info.amount,
     });
 
     Ok(())
@@ -84,7 +91,7 @@ pub(crate) fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<(
 pub struct LockToken<'info> {
     #[account(seeds = [STATE_SEED.as_bytes()], bump)]
     pub state: Box<Account<'info, State>>,
-    #[account(init_if_needed, seeds = [LOCK_INFO_SEED.as_bytes(), mint.key().as_ref(), payer.key().as_ref()], bump, payer = payer, space = size_of::<LockInfo>()+8)]
+    #[account(init_if_needed, seeds = [LOCK_INFO_SEED.as_bytes(), mint.key().as_ref(), target_account.key().as_ref()], bump, payer = payer, space = size_of::<LockInfo>()+8)]
     pub lock_info: Box<Account<'info, LockInfo>>,
     pub mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(mut)]
@@ -93,12 +100,12 @@ pub struct LockToken<'info> {
     #[account(
         mut,
         associated_token::mint = mint,
-        associated_token::authority = state,
+        associated_token::authority = payer,
         associated_token::token_program = token_program
     )]
-    pub state_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub payer_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
-        init,
+        init_if_needed,
         payer = payer,
         associated_token::mint = mint,
         associated_token::authority = lock_info,
@@ -106,7 +113,10 @@ pub struct LockToken<'info> {
     )]
     pub lock_token_account: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
-    pub associated_token_program: Program<'info, AssociatedToken>
+    pub associated_token_program: Program<'info, AssociatedToken>,
+
+    /// CHECK
+    pub target_account: UncheckedAccount<'info>,
 }
 
 #[derive(Accounts)]

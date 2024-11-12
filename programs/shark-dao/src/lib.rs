@@ -25,13 +25,13 @@ pub mod shark_dao {
     // pub fn withdraw_token(ctx: Context<WithdrawToken>) -> Result<()> {
     //     instructions::withdraw_token(ctx)
     // }
-    pub fn withdraw_fund(ctx: Context<WithdrawFund>, amount: u64) -> Result<()> {
-        instructions::withdraw_fund(ctx, amount)
-    }
+    // pub fn withdraw_fund(ctx: Context<WithdrawFund>, amount: u64) -> Result<()> {
+    //     instructions::withdraw_fund(ctx, amount)
+    // }
 
-    pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {
-        instructions::withdraw_sol(ctx, amount)
-    }
+    // pub fn withdraw_sol(ctx: Context<WithdrawSol>, amount: u64) -> Result<()> {
+    //     instructions::withdraw_sol(ctx, amount)
+    // }
     pub fn lock_token(ctx: Context<LockToken>, amount: u64, etm: u64) -> Result<()> {
         instructions::lock_token(ctx, amount, etm)
     }

@@ -23,6 +23,14 @@ pub struct WithdrawToken{
 }
 
 #[event]
+pub struct LockToken{
+    pub account: String,
+    pub mint: String,
+    pub amount: u64,
+    pub etm: u64,
+}
+
+#[event]
 pub struct WithdrawFund{
     pub account: String,
     pub mint: String,

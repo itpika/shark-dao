@@ -24,6 +24,8 @@ pub enum ErrorCode {
     NotAuthorized,
     #[msg("Time over")]
     TimeOver,
+    #[msg("Time over stm")]
+    TimeOverStm,
     #[msg("Repeated withdraw")]
     RepeatedWithdraw,
 }

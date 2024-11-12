@@ -19,7 +19,9 @@ pub const USER_PREORDER: &str = "USER_PREORDER";
 pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String, amount: u64) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     let now = ctx.accounts.clock.unix_timestamp as u64;
-    require!(ctx.accounts.preorder.stm < now && ctx.accounts.preorder.etm > now, ErrorCode::TimeOver);
+    require!(ctx.accounts.preorder.stm < now, ErrorCode::TimeOverStm);
+    msg!("now {} etm {}", now, ctx.accounts.preorder.etm);
+    require!(ctx.accounts.preorder.etm > now, ErrorCode::TimeOver);
 
     require!(ctx.accounts.user_collection_token_account.amount >= amount, ErrorCode::InsufficientCollectionMintBalance);
 
@@ -53,7 +55,10 @@ pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String,
             ]
         ]), buy_amount, ctx.accounts.mint.decimals)?;
 
+
     msg!("#preorder token preorder_name: {} account: {}, amount: {}, buy_amount: {}", preorder_name, ctx.accounts.payer.key(), amount, buy_amount);
+
+    msg!("#preorder_sol token preorder_name: {} account: {}, amount: {}, buy_amount: {}", preorder_name, ctx.accounts.payer.key(), amount, buy_amount);
 
     if ctx.accounts.user_preorder.owner.eq(&system_program::id()) {
         ctx.accounts.user_preorder.owner = ctx.accounts.payer.key();
@@ -64,8 +69,13 @@ pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String,
         ctx.accounts.user_preorder.amount = amount;
         ctx.accounts.user_preorder.buy_amount = buy_amount;
         ctx.accounts.preorder.num += 1;
+    } else {
+        ctx.accounts.user_preorder.amount += amount;
     }
-    ctx.accounts.preorder.amount -= buy_amount;
+
+    ctx.accounts.preorder_token_account.reload().unwrap();
+    ctx.accounts.preorder.amount = ctx.accounts.preorder_token_account.amount;
+
     ctx.accounts.preorder.collection_amount += amount;
 
     emit!(events::Preorder{

@@ -11,8 +11,16 @@ pub struct NewPreorder{
 #[event]
 pub struct Preorder{
     pub account: String,
+    pub mint: String,
     pub in_amount: u64,
     pub out_amount: u64,
+}
+
+#[event]
+pub struct WithdrawCollectionToken{
+    pub account: String,
+    pub mint: String,
+    pub amount: u64,
 }
 
 #[event]

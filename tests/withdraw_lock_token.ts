@@ -15,18 +15,14 @@ describe("shark-dao", () => {
   console.log("wallet", wallet.publicKey.toBase58());
 
 
-  // let result = await db_conn.query("SELECT * FROM tk_lock")
-  // console.log(result);
-  // return
-  let targetAccount = 'AtaZh7fFkWY4hqovR19JLmkurkaVtokYXtk7fpCAozZc'
-  // let targetAccount = wallet.publicKey.toBase58();
+
   let mint = 'FBQAsNhTiQSWyDL7NGz8w9fV9BVqLbUSviWRy8McbTXU'
-  let num = new BN(5000*1000000);
-  let etm = new BN(1731943518); // 结束时间就是今天，所以现在可以提取
+  let num = new BN(200*1000000);
+  let etm = new BN(1731920400);
   let now = new Date().getTime()
   let [lock_info] = web3.PublicKey.findProgramAddressSync([Buffer.from("lock_info"),
     new web3.PublicKey(mint).toBuffer(),
-    new web3.PublicKey(targetAccount).toBuffer(),
+    new web3.PublicKey(wallet.publicKey).toBuffer(),
   ], program.programId);
   console.log("lock_info", lock_info.toBase58());
 
@@ -42,15 +38,11 @@ describe("shark-dao", () => {
     await db_conn.connect();
 
     // Add your test here.
-    const tx = await program.methods.lockToken(num, etm).
+    const tx = await program.methods.withdrawUnlockToken().
     accounts({
       mint,
-      targetAccount,
     }).signers([wallet]).rpc();
     console.log("Your transaction signature", tx);
 
-    await db_conn.execute(
-        `INSERT INTO tk_lock(\`user_addr\`, \`hash\`, \`token_num\`, \`ctm\`, \`lock_etm\`, \`chain_time\`, \`mint\`, \`lock_account\`)
-        VALUES ('${targetAccount}', '${tx}', '${num.toString()}', ${now}, ${etm.toNumber()}, ${now}, '${mint}', '${lock_info.toBase58()}')`)
   });
 });

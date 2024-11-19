@@ -6,9 +6,17 @@ use crate::instructions::{STATE_SEED, State};
 
 pub(crate) fn set_auth(ctx: Context<SetAuth>, admin: Pubkey) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
-    require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
+    // require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
     msg!("#set auth: {} -> {}", ctx.accounts.payer.key(), admin);
     ctx.accounts.state.admin = admin;
+    Ok(())
+}
+
+pub(crate) fn set_sol_price(ctx: Context<SetAuth>, price: u64) -> Result<()> {
+    require!(ctx.accounts.state.init, ErrorCode::NotInit);
+    require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
+    msg!("#set sol price: {} -> {}", ctx.accounts.state.sol_price, price);
+    ctx.accounts.state.sol_price = price;
     Ok(())
 }
 

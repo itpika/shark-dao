@@ -44,6 +44,7 @@ pub(crate) fn lock_token(ctx: Context<LockToken>, amount: u64, etm: u64) -> Resu
 pub(crate) fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(!ctx.accounts.lock_info.withdraw, ErrorCode::RepeatedWithdraw);
+    require!(!ctx.accounts.lock_info.etm < ctx.accounts.clock.unix_timestamp as u64, ErrorCode::RepeatedWithdraw);
 
     token_interface::transfer_checked(
         CpiContext::new_with_signer(ctx.accounts.token_program.to_account_info(),TransferChecked {
@@ -56,7 +57,7 @@ pub(crate) fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<(
             ctx.accounts.mint.key().as_ref(),
             ctx.accounts.payer.key().as_ref(),
             &[ctx.bumps.lock_info]
-        ]]), ctx.accounts.lock_info.amount, ctx.accounts.mint.decimals)?;
+        ]]), ctx.accounts.lock_token_account.amount, ctx.accounts.mint.decimals)?;
 
     ctx.accounts.lock_info.withdraw = true;
     ctx.accounts.lock_info.wtm = ctx.accounts.clock.unix_timestamp as u64;

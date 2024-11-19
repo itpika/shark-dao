@@ -27,7 +27,7 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
 
     ctx.accounts.preorder.stm = stm;
     ctx.accounts.preorder.etm = etm;
-    ctx.accounts.preorder.amount = amount;
+    ctx.accounts.preorder.token_amount = amount;
     ctx.accounts.preorder.price = price;
     ctx.accounts.preorder.mint = ctx.accounts.mint.key();
     ctx.accounts.preorder.collection_mint = ctx.accounts.collection_mint.key();
@@ -94,10 +94,12 @@ pub struct NewPreorder<'info> {
 
 #[account]
 pub struct PreOrder {
-    // 预购总数量
-    pub amount: u64,
+    // token剩余总数量
+    pub token_amount: u64,
     // 预购总资金数量
     pub collection_amount: u64,
+    // 预购sol数量
+    pub sol_amount: u64,
     // 购买人数
     pub num: u64,
     // 预售开始时间

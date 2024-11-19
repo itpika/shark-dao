@@ -12,7 +12,7 @@ describe("shark-dao", () => {
 
   console.log("program", program.programId.toBase58());
   console.log("wallet", wallet.publicKey.toBase58());
-  let preorder_name = "three"
+  let preorder_name = "first_preorders"
   let [preorder] = web3.PublicKey.findProgramAddressSync([Buffer.from("PREORDER"),
     Buffer.from(preorder_name),
   ], program.programId);

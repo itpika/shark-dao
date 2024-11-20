@@ -21,6 +21,7 @@ new_preorder = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/new_preord
 preorder = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/preorder.ts"
 sol_preorder = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/sol_preorder.ts"
 lock_token = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/lock_token.ts"
+unlock_token = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/unlock_token.ts"
 withdraw_sol = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/withdraw_sol.ts"
 withdraw_usdt = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/withdraw_usdt.ts"
 auth = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/auth.ts"

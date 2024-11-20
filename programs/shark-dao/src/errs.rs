@@ -28,4 +28,6 @@ pub enum ErrorCode {
     TimeOverStm,
     #[msg("Repeated withdraw")]
     RepeatedWithdraw,
+    #[msg("Time unarrived")]
+    TimeUnarrived
 }

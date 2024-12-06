@@ -25,6 +25,7 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
             mint: ctx.accounts.mint.to_account_info(),
         }), amount, ctx.accounts.mint.decimals)?;
 
+
     ctx.accounts.preorder.stm = stm;
     ctx.accounts.preorder.etm = etm;
     ctx.accounts.preorder.token_amount = amount;
@@ -33,7 +34,7 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
     ctx.accounts.preorder.collection_mint = ctx.accounts.collection_mint.key();
     ctx.accounts.preorder.extend = [0u64; 32];
 
-    msg!("#new preorder token account: {}, amount: {}", ctx.accounts.payer.key(), amount);
+    msg!("#new preorder : {}, amount: {}", preorder_name.clone(), amount);
 
     emit!(events::NewPreorder{
             price,

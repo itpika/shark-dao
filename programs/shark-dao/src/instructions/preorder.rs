@@ -1,4 +1,5 @@
 use std::mem::size_of;
+use std::str::FromStr;
 use anchor_lang::context::Context;
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::system_program;
@@ -8,6 +9,7 @@ use anchor_spl::token::{transfer_checked, Token};
 use anchor_spl::token_2022::TransferChecked;
 use anchor_spl::token_interface;
 use anchor_spl::token_interface::{Mint, TokenAccount};
+use pyth_solana_receiver_sdk::price_update::{get_feed_id_from_hex, PriceUpdateV2};
 // use spl_token::instruction::TokenInstruction::TransferChecked;
 
 use crate::errs::ErrorCode;
@@ -100,6 +102,9 @@ pub(crate) fn preorder_token(ctx: Context<PreorderToken>, preorder_name: String,
 // sol 购买
 pub(crate) fn preorder_token_sol(ctx: Context<PreorderTokenBySol>, preorder_name: String, amount: u64) -> Result<()> {
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
+
+    require!(ctx.accounts.price_update.key().eq(&Pubkey::from_str("7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE").unwrap()), ErrorCode::InvalidParameter);
+
     let now = ctx.accounts.clock.unix_timestamp as u64;
     require!(ctx.accounts.preorder.stm < now, ErrorCode::TimeOverStm);
     // msg!("now {} etm {}", now, ctx.accounts.preorder.etm);
@@ -108,9 +113,29 @@ pub(crate) fn preorder_token_sol(ctx: Context<PreorderTokenBySol>, preorder_name
     require!(ctx.accounts.payer.lamports() >= amount, ErrorCode::InsufficientCollectionMintBalance);
     require!(ctx.accounts.preorder_token_account.amount > 0, ErrorCode::InsufficientMintBalance);
 
+    let price_update = &mut ctx.accounts.price_update;
+    // get_price_no_older_than will fail if the price update is more than 30 seconds old
+    let maximum_age: u64 = 30;
+    // get_price_no_older_than will fail if the price update is for a different price feed.
+    // This string is the id of the BTC/USD feed. See https://pyth.network/developers/price-feed-ids for all available IDs.
+    let feed_id: [u8; 32] = get_feed_id_from_hex("0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d")?;
+    let price = price_update.get_price_no_older_than(&Clock::get()?, maximum_age, &feed_id)?;
+    // The price is (7160106530699 ± 5129162301) * 10^-8
+    msg!("The price is ({} ± {}) * {}", price.price, price.conf, price.exponent);
+
+    let mut sol_price: u64;
+    if price.exponent < 0 {
+        sol_price = price.price.checked_div(10_i32.pow((price.exponent *-1) as u32) as i64).unwrap() as u64;
+    } else {
+        sol_price = price.price.checked_mul(10_i32.pow((price.exponent) as u32) as i64).unwrap() as u64;
+    }
+    msg!("sol_price: {}", sol_price);
+
+
     // 避免溢出，sol和 token精度同时除1e6
     let sol_decimals = 1000000000_u64.checked_div(1000000).unwrap();
-    let sol_price = ctx.accounts.state.sol_price.checked_div(1000000).unwrap();
+    // let sol_price = ctx.accounts.state.sol_price.checked_div(1000000).unwrap();
+
     // compute USD price
     let u_amount = amount.checked_mul(sol_price).unwrap().checked_div(sol_decimals).unwrap();
 
@@ -242,6 +267,7 @@ pub struct PreorderToken<'info> {
 #[derive(Accounts)]
 #[instruction(preorder_name: String)]
 pub struct PreorderTokenBySol<'info> {
+    pub price_update: Account<'info, PriceUpdateV2>,
     #[account(mut, seeds = [STATE_SEED.as_bytes()], bump)]
     pub state: Box<Account<'info, State>>,
     #[account(init_if_needed, seeds = [USER_PREORDER_SOL.as_bytes(), preorder.key().as_ref(), payer.key().as_ref()], bump, payer = payer, space = size_of::<UserSolPreOrder>()+8)]

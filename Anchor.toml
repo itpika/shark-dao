@@ -12,6 +12,7 @@ shark_dao = "3vHSdBG1jZxq8r39y1NH4Mts6LyccMPs6WX6u2ic2BE1"
 url = "https://api.apr.dev"
 
 [provider]
+#cluster = "devnet"
 cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 

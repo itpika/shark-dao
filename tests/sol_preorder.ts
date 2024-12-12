@@ -12,7 +12,7 @@ describe("shark-dao", () => {
 
   console.log("program", program.programId.toBase58());
   console.log("wallet", wallet.publicKey.toBase58());
-  let preorder_name = "first_preorders"
+  let preorder_name = "one"
   let [preorder] = web3.PublicKey.findProgramAddressSync([Buffer.from("PREORDER"),
     Buffer.from(preorder_name),
   ], program.programId);
@@ -29,9 +29,10 @@ describe("shark-dao", () => {
     console.log('preorderInfo', preorderInfo)
 
     // Add your test here.
-    const tx = await program.methods.preorderTokenSol(preorder_name, new BN(50000000000)).
+    const tx = await program.methods.preorderTokenSol(preorder_name, new BN(50000000)).
     accounts({
-      mint: 'FBQAsNhTiQSWyDL7NGz8w9fV9BVqLbUSviWRy8McbTXU',
+      priceUpdate : '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+      mint: 'A3vy9P1ftZdvYzCydzro3phHpBqpXhJMpLXtakqPVVfE',
       payer: wallet.publicKey,
     }).signers([wallet]).rpc();
     console.log("Your transaction signature", tx);

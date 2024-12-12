@@ -17,7 +17,8 @@ describe("shark-dao", () => {
 
 
     // Add your test here.
-    const tx = await program.methods.setAuth(new web3.PublicKey('AtaZh7fFkWY4hqovR19JLmkurkaVtokYXtk7fpCAozZc')).
+    // const tx = await program.methods.setAuth(new web3.PublicKey('AtaZh7fFkWY4hqovR19JLmkurkaVtokYXtk7fpCAozZc')).
+    const tx = await program.methods.setAuth(new web3.PublicKey('2vjTdLqB3AVmMYRoZsfJEDvm1hBd7zQg6sZrhRhiH8Vz')).
     // const tx = await program.methods.setAuth(new web3.PublicKey('8gwziiJQw3XZbvonMkJLvprgDpU47KkGUhPRQAi86hfi')).
     accounts({}).signers([wallet]).rpc();
     console.log("Your transaction signature", tx);

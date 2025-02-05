@@ -44,5 +44,7 @@ pub mod shark_dao {
     pub fn withdraw_unlock_token(ctx: Context<WithdrawLockToken>) -> Result<()> {
         instructions::withdraw_unlock_token(ctx)
     }
-
+    pub fn get_back(ctx: Context<GetBack>, preorder_name: String) -> Result<()> {
+        instructions::get_back(ctx, preorder_name)
+    }
 }

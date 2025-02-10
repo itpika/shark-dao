@@ -2,6 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import {Program, web3} from "@coral-xyz/anchor";
 import { SharkDao } from "../target/types/shark_dao";
 import BN from "bn.js";
+import {getAssociatedTokenAddress} from "@solana/spl-token";
 
 describe("shark-dao", () => {
   // Configure the client to use the local cluster.

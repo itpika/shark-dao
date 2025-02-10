@@ -17,6 +17,10 @@ pub(crate) fn new_preorder(ctx: Context<NewPreorder>, preorder_name: String, amo
     require!(ctx.accounts.state.init, ErrorCode::NotInit);
     require!(ctx.accounts.state.admin.eq(ctx.accounts.payer.key), ErrorCode::NotAuthorized);
 
+    // let index = anchor_lang::solana_program::sysvar::instructions::load_current_index_checked(&ctx.accounts.preorder.to_account_info())? as usize;
+    // let index = anchor_lang::solana_program::sysvar::instructions::load_instruction_at_checked(index, &ctx.accounts.preorder.to_account_info())?;
+    // anchor_lang::solana_program::sysvar::instructions::ID
+
     token_interface::transfer_checked(
         CpiContext::new(ctx.accounts.token_program.to_account_info(),TransferChecked {
             from: ctx.accounts.payer_token_account.to_account_info(),
